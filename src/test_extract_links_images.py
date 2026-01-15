@@ -11,6 +11,14 @@ class TestExtractLinksImages(unittest.TestCase):
         ]
         self.assertEqual(images, expected_images)
 
+        text = "Here is an image: ![Alt text](http://example.com/image.png) and another one ![Alt text](http://example.com/image.png)"
+        images = extract_markdown_images(text)
+        expected_images = [
+            ('Alt text', 'http://example.com/image.png'),
+            ('Alt text', 'http://example.com/image.png'),
+        ]
+        self.assertEqual(images, expected_images)
+
     def test_extract_markdown_links(self):
         text = "Here is a link: [Example](http://example.com) and another one [Google](http://google.com)"
         links = extract_markdown_links(text)
