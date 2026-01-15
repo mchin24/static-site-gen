@@ -13,8 +13,8 @@ class HTMLNode:
             return ""
         retval = ""
         for key, value in (self.props or {}).items():
-            retval += f'{key}="{value}" '
-        return retval.strip()
+            retval += f' {key}="{value}"'
+        return retval
     
     def __repr__(self):
         ret_tag = f"'{self.tag}'" if self.tag is not None else "None"
