@@ -49,7 +49,7 @@ class TestMarkdownToHTML(unittest.TestCase):
         md = """
 This is **bolded** paragraph
 text in a p
-tag here
+tag here ![alt text](https://example.com/image.png)
 
 This is another paragraph with _italic_ text and `code` here
 
@@ -59,7 +59,7 @@ This is another paragraph with _italic_ text and `code` here
         html = node.to_html()
         self.assertEqual(
             html,
-            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here <img src=\"https://example.com/image.png\" alt=\"alt text\"></img></p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
         )
 
     def test_codeblock(self):
