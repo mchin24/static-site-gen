@@ -11,6 +11,9 @@ class LeafNode(HTMLNode):
         if self.tag is None:
             return str(self.value)
         props = self.props_to_html()
+        match self.tag:
+            case "img" | "br" | "hr" | "input" | "meta" | "link":
+                return f"<{self.tag}{props} />"
         return f"<{self.tag}{props}>{self.value}</{self.tag}>"
     
     def __repr__(self):

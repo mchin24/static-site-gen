@@ -1,5 +1,5 @@
 import unittest
-from utils import markdown_to_blocks
+from utils import markdown_to_blocks, extract_title
 from utils import TextNode, TextType
 
 class TestMarkdownToBlocks(unittest.TestCase):
@@ -41,6 +41,24 @@ This is a simple text.
             "# This is a heading",
             "- This is a list item.\n- List item 2"
         ])
+
+    def test_extract_title(self):
+        markdown = '''
+# My Document Title 
+
+Some other stuff here
+    '''
+        title = extract_title(markdown)
+        self.assertEqual(title, "My Document Title")
+
+    def test_extract_title_no_title(self):
+        markdown = '''
+Some text without a title.
+- List item
+        '''
+        with self.assertRaises(Exception) as context:
+            extract_title(markdown)
+        self.assertTrue("No title found in markdown" in str(context.exception))
 
     if __name__ == '__main__':
         unittest.main() 

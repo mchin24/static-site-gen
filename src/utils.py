@@ -103,10 +103,10 @@ def markdown_to_blocks(markdown):
     return blocks
 
 def markdown_to_html_node(markdown):
-    if len(markdown) == 0:
-        return []
-    
     node = ParentNode('div', [])
+
+    if len(markdown) == 0:
+        return node
 
     blocks = markdown_to_blocks(markdown)
     for block in blocks:
@@ -144,7 +144,12 @@ def markdown_to_html_node(markdown):
                 items = [item for item in items if item.strip()]
                 ul_node = ParentNode('ul', [])
                 for item in items:
-                    ul_node.children.append(LeafNode('li', item.replace('- ', '', 1).strip()))
+                    text_nodes = text_to_text_nodes(item.replace('- ', '', 1).strip())
+                    li_children = []
+                    for text_node in text_nodes:
+                        li_children.append(TextNode.text_node_to_html_node(text_node))
+                    li_node = ParentNode('li', li_children)
+                    ul_node.children.append(li_node)
                 node.children.append(ul_node)
             
             case BlockType.ORDERED_LIST:
@@ -159,6 +164,13 @@ def markdown_to_html_node(markdown):
                 continue
 
     return node
+
+def extract_title(markdown):
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        if block.startswith('# '):
+            return block[2:].strip()
+    raise Exception("No title found in markdown")
                 
 def copy_static_files(src_dir, dest_dir):
     # clear destination directory
@@ -180,3 +192,17 @@ def copy_static_files(src_dir, dest_dir):
             print(f"Copying {file} to {dest_dir}")
             shutil.copy(file_path, dest_path)
         
+def generate_page(from_path, template_path, dest_path):
+    if not os.path.exists(os.path.abspath(from_path)):
+        raise FileNotFoundError(f"Source file {from_path} does not exist.")
+    
+    print(f"Generating page from {from_path} to {dest_path} using template {template_path}")
+    src_file = open(os.path.abspath(from_path), 'r').read()
+    template_file = open(os.path.abspath(template_path), 'r').read()
+    md_as_html = markdown_to_html_node(src_file).to_html()
+    title = extract_title(src_file)
+    template_file = template_file.replace("{{ Title }}", title)
+    template_file = template_file.replace("{{ Content }}", md_as_html)
+    dest_file = open(os.path.abspath(dest_path), 'w')
+    dest_file.write(template_file)
+    dest_file.close()
