@@ -85,3 +85,13 @@ def text_to_text_nodes(text):
     text_nodes = split_nodes_delimiter(text_nodes, "**", TextType.BOLD)
 
     return text_nodes
+
+def markdown_to_blocks(markdown):
+    if len(markdown) == 0:
+        return []
+    
+    blocks = [item.strip() for item in markdown.split("\n\n") if item.strip()]
+    for block in blocks:
+        block = block.strip()
+
+    return blocks
