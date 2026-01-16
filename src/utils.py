@@ -4,6 +4,8 @@ from block import BlockType, block_to_block_type
 from htmlnode import HTMLNode
 from parentnode import ParentNode
 import re
+import os
+import shutil
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
@@ -158,3 +160,23 @@ def markdown_to_html_node(markdown):
 
     return node
                 
+def copy_static_files(src_dir, dest_dir):
+    # clear destination directory
+    if os.path.exists(dest_dir):
+        shutil.rmtree(dest_dir)
+
+    # create the folder if it doesn't exist
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+    
+    # copy source directory files
+    files = os.listdir(src_dir)
+    for file in files:
+        file_path = os.path.join(src_dir, file)
+        dest_path = os.path.join(dest_dir, file)
+        if(os.path.isdir(file_path)):
+            copy_static_files(file_path, dest_path)
+        elif os.path.isfile(file_path):
+            print(f"Copying {file} to {dest_dir}")
+            shutil.copy(file_path, dest_path)
+        
