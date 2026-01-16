@@ -16,6 +16,14 @@ class HTMLNode:
             retval += f' {key}="{value}"'
         return retval
     
+    def __eq__(self, other):
+        if not isinstance(other, HTMLNode):
+            return False
+        return (self.tag == other.tag and
+                self.value == other.value and
+                self.children == other.children and
+                self.props == other.props)
+    
     def __repr__(self):
         ret_tag = f"'{self.tag}'" if self.tag is not None else "None"
         ret_value = f"'{self.value}'" if self.value is not None else "None"
