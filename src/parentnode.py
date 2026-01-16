@@ -22,4 +22,4 @@ class ParentNode(HTMLNode):
         ret_children = f"'{self.children}'" if self.children is not None else "None"
         ret_props = f"'{self.props}'" if self.props is not None else "None"
 
-        return f"HTMLNode(tag={ret_tag}, children={ret_children}, props={ret_props})"
+        return f"HTMLNode(tag={ret_tag}, value=None, children={ret_children}, props={ret_props})"
