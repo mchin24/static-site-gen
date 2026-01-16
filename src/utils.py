@@ -157,7 +157,12 @@ def markdown_to_html_node(markdown):
                 items = [item for item in items if item.strip()]
                 ol_node = ParentNode('ol', [])
                 for item in items:
-                    ol_node.children.append(LeafNode('li', item[item.find('. ')+2:].strip()))
+                    text_nodes = text_to_text_nodes(item[item.find('. ')+2:].strip())
+                    li_children = []
+                    for text_node in text_nodes:
+                        li_children.append(TextNode.text_node_to_html_node(text_node))
+                    li_node = ParentNode('li', li_children)
+                    ol_node.children.append(li_node)
                 node.children.append(ol_node)
             
             case _:
@@ -196,13 +201,25 @@ def generate_page(from_path, template_path, dest_path):
     if not os.path.exists(os.path.abspath(from_path)):
         raise FileNotFoundError(f"Source file {from_path} does not exist.")
     
+    if not os.path.exists(os.path.abspath(dest_path)):
+        os.makedirs(os.path.abspath(dest_path))
+
     print(f"Generating page from {from_path} to {dest_path} using template {template_path}")
-    src_file = open(os.path.abspath(from_path), 'r').read()
-    template_file = open(os.path.abspath(template_path), 'r').read()
-    md_as_html = markdown_to_html_node(src_file).to_html()
-    title = extract_title(src_file)
-    template_file = template_file.replace("{{ Title }}", title)
-    template_file = template_file.replace("{{ Content }}", md_as_html)
-    dest_file = open(os.path.abspath(dest_path), 'w')
-    dest_file.write(template_file)
-    dest_file.close()
+
+    files = os.listdir(from_path)
+    for file in files:
+        if file.lower() == "index.md":
+            src_file = open(os.path.abspath(os.path.join(from_path, file)), 'r').read()
+            template_file = open(os.path.abspath(template_path), 'r').read()
+            md_as_html = markdown_to_html_node(src_file).to_html()
+            title = extract_title(src_file)
+            template_file = template_file.replace("{{ Title }}", title)
+            template_file = template_file.replace("{{ Content }}", md_as_html)
+            dest_path = os.path.join(dest_path, "index.html")
+            dest_file = open(os.path.abspath(dest_path), 'w')
+            dest_file.write(template_file)
+            dest_file.close()
+
+        if os.path.isdir(os.path.join(from_path, file)):
+            generate_page(os.path.abspath(os.path.join(from_path, file)), os.path.abspath(template_path), os.path.abspath(os.path.join(dest_path, file)))
+
