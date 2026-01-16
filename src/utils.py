@@ -197,7 +197,7 @@ def copy_static_files(src_dir, dest_dir):
             print(f"Copying {file} to {dest_dir}")
             shutil.copy(file_path, dest_path)
         
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath='/'):
     if not os.path.exists(os.path.abspath(from_path)):
         raise FileNotFoundError(f"Source file {from_path} does not exist.")
     
@@ -213,8 +213,13 @@ def generate_page(from_path, template_path, dest_path):
             template_file = open(os.path.abspath(template_path), 'r').read()
             md_as_html = markdown_to_html_node(src_file).to_html()
             title = extract_title(src_file)
+
             template_file = template_file.replace("{{ Title }}", title)
             template_file = template_file.replace("{{ Content }}", md_as_html)
+            
+            template_file = template_file.replace('href="/', f'href="{basepath}')
+            template_file = template_file.replace('src="/', f'src="{basepath}')
+
             dest_path = os.path.join(dest_path, "index.html")
             dest_file = open(os.path.abspath(dest_path), 'w')
             dest_file.write(template_file)
