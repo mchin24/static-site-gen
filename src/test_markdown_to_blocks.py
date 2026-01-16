@@ -13,7 +13,6 @@ This is a simple text.
 - List item 2
         '''
         blocks = markdown_to_blocks(markdown)
-        print(blocks)
         self.assertEqual(len(blocks), 3)
         self.assertEqual(blocks, [
             "This is a simple text.",
